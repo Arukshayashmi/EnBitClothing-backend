@@ -1,18 +1,28 @@
-import JWT  from "jsonwebtoken"
-import { userModel } from "../models/users.js"
+import JWT from "jsonwebtoken";
+import { userModel } from "../models/users.js";
 
 export const isAuthentic = async (req, res, next) => {
-    const token = req.headers.authorization;
+    const authHeader = req.headers.authorization;
 
-    if(!token){
+    if (!authHeader) {
         return res.status(401).send({
-            success : false,
-            message : 'Unauthorized User'
-        })
+            success: false,
+            message: 'Unauthorized User'
+        });
     }
 
-    const decodeData = JWT.verify(token, process.env.JWT_SECRET)
-    req.user = await userModel.findById(decodeData._id)
-    next()
-
-}
+    const token = authHeader.split(' ')[1]; // Extract token from Authorization header
+    
+    try {
+        const decodeData = JWT.verify(token, process.env.JWT_SECRET);
+        console.log('Decoded Data:', decodeData);
+        req.user = await userModel.findById(decodeData._id);
+        next();
+    } catch (error) {
+        console.error('Error verifying JWT token:', error);
+        return res.status(401).send({
+            success: false,
+            message: 'Invalid Token'
+        });
+    }
+};
