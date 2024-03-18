@@ -5,7 +5,7 @@ export const isAuthentic = async (req, res, next) => {
     const token = req.headers.authorization;
 
     if(!token){
-        return resp.status(401).send({
+        return res.status(401).send({
             success : false,
             message : 'Unauthorized User'
         })
