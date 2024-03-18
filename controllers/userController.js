@@ -35,7 +35,7 @@ export const userController = async (req, resp) => {
 
         const token = user.tokenGenerate()
 
-        resp.status(200).cookie('token', token, {
+        resp.status(200).authorization('token', token, {
             expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
             httpOnly : process.env.NODE_ENV === 'development' ? true : false,
             secure : process.env.NODE_ENV === 'development' ? true : false,
@@ -94,6 +94,7 @@ export const verifyController = async (req, resp) => {
             return resp.status(400).send({ success: false, message: 'Invalid verification code, Resend and try again' });
         }
 
+        console.log('veriffied');
         // Send success response
         resp.status(200).send({ 
             success: true, 
@@ -177,7 +178,7 @@ export const loginController = async (req, resp) => {
         //token genererated
         const token = user.tokenGenerate()
 
-        resp.status(200).cookie('token', token, {
+        resp.status(200).autherization('token', token, {
             expires: new Date(Date.now() + 7 * 24 * 60 * 60 * 1000),
             httpOnly : process.env.NODE_ENV === 'development' ? true : false,
             secure : process.env.NODE_ENV === 'development' ? true : false,
