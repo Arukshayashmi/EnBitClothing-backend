@@ -32,12 +32,14 @@ app.use(cookieParser())
 import testRouter from './routes/testRoute.js'
 import userRoute from './routes/userRoute.js'
 import productRoute from './routes/productRoute.js'
+import checkoutRoute from './routes/checkoutRoute.js'
 import categoryRoute from './routes/categoryRoute.js'
 
 //routes
 app.use('/api/v1', testRouter)
 app.use('/api/v1/user', userRoute)
 app.use('/api/v1/product', productRoute)
+app.use('/api/v1/checkout', checkoutRoute)
 app.use('/api/v1/category', categoryRoute)
 
 app.get('/', (req, resp) => {

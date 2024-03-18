@@ -247,14 +247,16 @@ export const logOutUserController = (req, resp) => {
 export const userProfileUpdateController = async (req, resp) => {
     try {
         const user = await userModel.findById(req.user._id)
-        const {name, email, phone, adress, city, country} = req.body
+        const { first_name, last_name,email, adress, city, post_code, phone, dob } = req.body
         //validation + update
-        if(name) user.name = name
-        if(email) user.name = email
+        if(first_name) user.first_name =  first_name
+        if(last_name) user.last_name =  last_name
+        if(email) user.email = email
         if(phone) user.phone = phone
         if(adress) user.adress = adress
         if(city) user.city = city
-        if(country) user.country = country
+        if(post_code) user.post_code = post_code
+        if(dob) user.dob = dob
 
         await user.save();
         resp.status(200).send({
@@ -263,6 +265,7 @@ export const userProfileUpdateController = async (req, resp) => {
         })
 
     } catch (error) {
+        console.log(error)
         resp.status(500).send({
             success : false,
             message : 'updateProfile API Error',

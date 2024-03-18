@@ -11,7 +11,7 @@ export const isAuthentic = async (req, res, next) => {
         });
     }
 
-    const token = authHeader.split(' ')[1]; // Extract token from Authorization header
+    const token = authHeader.split(' ')[1]; 
     
     try {
         const decodeData = JWT.verify(token, process.env.JWT_SECRET);
