@@ -318,6 +318,7 @@ export const userProfilePicUpdateController = async (req, resp) => {
         const user = await userModel.findById(req.user._id)
         //get file from client
         const file = getDataUri(req.file)
+        console.log(file)
         // Check if user has a profile picture
         if (user.profilePic && user.profilePic.public_id) {
             // Delete previous image
@@ -333,7 +334,8 @@ export const userProfilePicUpdateController = async (req, resp) => {
         await user.save()
         resp.status(200).send({
             success : true,
-            message : 'Profile Image updated Successfully'
+            message : 'Profile Image updated Successfully',
+            user
         })
     } catch (error) {
         resp.status(500).send({
