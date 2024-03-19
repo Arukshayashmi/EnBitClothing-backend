@@ -8,7 +8,7 @@ const productLikesSchema = new mongoose.Schema({
     },
     product: {
         type: mongoose.Schema.Types.ObjectId,
-        ref: 'Products',
+        ref: 'products',
         required: true
     },
     status: {
@@ -17,4 +17,4 @@ const productLikesSchema = new mongoose.Schema({
     }
 }, { timestamps: true });
 
-export const ProductLikesModel = mongoose.model('ProductLikes', productLikesSchema);
+export const productLikesModel = mongoose.model('productLikes', productLikesSchema);

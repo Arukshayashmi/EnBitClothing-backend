@@ -1,4 +1,4 @@
-import { ProductLikesModel } from "../models/productLikesModel.js";
+import { productLikesModel } from "../models/productLikesModel.js";
 import { userModel } from "../models/users.js"
 import { productModel } from "../models/productModel.js"
 import { getDataUri } from "../utils/features.js";
@@ -68,6 +68,7 @@ export const getSingleProductController = async (req, resp) => {
             product
         })
     } catch (error) {
+        console.log("Kavindu")
         //Cast error || object ID error
         if (error.name === 'CastError') {
             return resp.status(500).send({
@@ -312,7 +313,7 @@ export const likeOrUnlikeProductController = async (req, res) => {
         const user = await userModel.findById(req.user._id)
         const userId = user._id;
 
-        const existingLike = await ProductLikesModel.findOne({ user: userId, product: productId });
+        const existingLike = await productLikesModel.findOne({ user: userId, product: productId });
 
         if (existingLike) {
             existingLike.status = existingLike.status === 1 ? 0 : 1;
@@ -339,4 +340,5 @@ export const likeOrUnlikeProductController = async (req, res) => {
             error
         });
     }
-};
+}
+
