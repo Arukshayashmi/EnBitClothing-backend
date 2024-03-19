@@ -7,26 +7,28 @@ import cloudinary from "cloudinary"
 //get all products
 export const getAllProductController = async (req, resp) => {
     try {
-        const { q } = req.query;
+        const { q, categoryId } = req.query;
         let query = {};
 
         if (q) {
             const searchPattern = new RegExp(q, 'i');
-            query = { name: searchPattern };
+            query.name = searchPattern;
         }
-        const products = await productModel.find(query);
-        // const products = await productModel.find({});
-        const user = await userModel.findById(req.user._id)
+        if (categoryId) {
+            query.category = categoryId;
+        }
+        
+        const products = await productModel.find(query).populate('category', 'category');
+        
+        const user = await userModel.findById(req.user._id);
         const userId = user._id;
         const likedProducts = await ProductLikesModel.find({ user: userId, status: 1 });
 
-        // Map the liked product IDs to an array
         const likedProductIds = likedProducts.map(likedProduct => likedProduct.product.toString());
 
-        // Update each product with the isFavourite property
         const productsWithFavouriteStatus = products.map(product => {
             const isFavourite = likedProductIds.includes(product._id.toString());
-            return { ...product._doc, isFavourite }; // Add the isFavourite property to the product object
+            return { ...product._doc, isFavourite }; 
         });
 
         resp.status(200).send({
@@ -41,15 +43,18 @@ export const getAllProductController = async (req, resp) => {
             success: false,
             message: 'getAllProduct API Error',
             error
-        })
+        });
     }
-}
+};
+
+
 
 
 //get single product
 export const getSingleProductController = async (req, resp) => {
     try {
-        const product = await productModel.findById(req.params.id)
+        const product = await productModel.findById(req.params.id).populate('category', 'category');
+        
         //validation
         if (!product) {
             return resp.status(404).send({
@@ -272,25 +277,21 @@ export const deleteProductIamgeController = async(req, resp)=>{
 export const deleteProductController = async(req, resp) => {
     try {
         const product = await productModel.findById(req.params.id)
-        //validation
         if(!product){
             return resp.status(404).send({
                 success : false,
                 message : 'Product Not Found'
             })
         }
-        //find and delete images from cloudinary
         for(let index=0; index<product.images.length; index++){
             await cloudinary.v2.uploader.destroy(product.images[index].public_id)
         }
-        //delete other product things
         await product.deleteOne();
         resp.status(200).send({
             success : true,
             message : 'Product deleted successfully'
         })
     } catch (error) {
-        //Cast error || object ID error
         if (error.name === 'CastError') {
             return resp.status(500).send({
                 success: false,

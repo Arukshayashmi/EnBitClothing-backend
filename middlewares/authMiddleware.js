@@ -15,7 +15,7 @@ export const isAuthentic = async (req, res, next) => {
     
     try {
         const decodeData = JWT.verify(token, process.env.JWT_SECRET);
-        console.log('Decoded Data:', decodeData);
+        // console.log('Decoded Data:', decodeData);
         req.user = await userModel.findById(decodeData._id);
         next();
     } catch (error) {
