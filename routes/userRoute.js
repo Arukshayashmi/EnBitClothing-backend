@@ -1,5 +1,5 @@
 import  express from "express";
-import { profileStepController, resendCode, verifyController, fetchUserProfileController, logOutUserController, loginController, updateUserPasswordController, userController, userProfilePicUpdateController, userProfileUpdateController } from "../controllers/userController.js";
+import { deleteAccountController, profileStepController, resendCode, verifyController, fetchUserProfileController, logOutUserController, loginController, updateUserPasswordController, userController, userProfilePicUpdateController, userProfileUpdateController } from "../controllers/userController.js";
 import {isAuthentic} from "../middlewares/authMiddleware.js";
 import { singlUpload } from "../middlewares/multer.js";
 
@@ -35,5 +35,8 @@ router.put('/password-update', isAuthentic, updateUserPasswordController)
 
 //update profile photo
 router.put('/photo-update', isAuthentic, singlUpload, userProfilePicUpdateController)
+
+// delete user account
+router.delete('/delete-account',isAuthentic, deleteAccountController);
 
 export default router

@@ -5,7 +5,15 @@ import cloudinary from "cloudinary"
 //get all products
 export const getAllProductController = async (req, resp) => {
     try {
-        const products = await productModel.find({});
+        const { q } = req.query;
+        let query = {};
+
+        if (q) {
+            const searchPattern = new RegExp(q, 'i');
+            query = { name: searchPattern };
+        }
+        const products = await productModel.find(query);
+        // const products = await productModel.find({});
         resp.status(200).send({
             success: true,
             message: 'all products fetched successfuly',

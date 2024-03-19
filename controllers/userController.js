@@ -332,10 +332,13 @@ export const userProfilePicUpdateController = async (req, resp) => {
         }
         //save updates
         await user.save()
+
+        const updatedUser = await userModel.findById(req.user._id);
+
         resp.status(200).send({
             success : true,
             message : 'Profile Image updated Successfully',
-            user
+            user : updatedUser
         })
     } catch (error) {
         resp.status(500).send({
@@ -344,8 +347,6 @@ export const userProfilePicUpdateController = async (req, resp) => {
             error
         })
     }
-
-   
 }
 
 // verification email send
@@ -375,3 +376,34 @@ async function sendVerificationEmail(email, confirmation_code)
         throw error;
     }
 }
+
+// delete user account
+export const deleteAccountController = async (req, res) => {
+    try {
+        const user = await userModel.findById(req.user._id)
+        const deletedUser = await userModel.findByIdAndDelete(user._id);
+
+        if (!deletedUser) {
+            return res.status(404).send({
+                success: false,
+                message: 'User not found'
+            });
+        }
+
+        if (deletedUser.profilePic && deletedUser.profilePic.public_id) {
+            await cloudinary.v2.uploader.destroy(deletedUser.profilePic.public_id);
+        }
+
+        res.status(200).send({
+            success: true,
+            message: 'Account deleted successfully'
+        });
+    } catch (error) {
+        console.error('Error deleting account:', error);
+        res.status(500).send({
+            success: false,
+            message: 'Error deleting account',
+            error: error.message
+        });
+    }
+};
