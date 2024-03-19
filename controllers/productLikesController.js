@@ -13,7 +13,7 @@ export const getAllLikedProducts = async (req, res) => {
         
         const likedProductIds = likedProducts.map(likedProduct => likedProduct.product._id.toString());
         
-        const allProducts = await productModel.find();
+        const allProducts = await productModel.find().populate('category', 'category');
         
         const productsWithFavouriteStatus = allProducts.map(product => {
             const isFavourite = likedProductIds.includes(product._id.toString());
