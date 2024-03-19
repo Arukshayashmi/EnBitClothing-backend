@@ -1,3 +1,5 @@
+import { ProductLikesModel } from "../models/productLikesModel.js";
+import { userModel } from "../models/users.js"
 import { productModel } from "../models/productModel.js"
 import { getDataUri } from "../utils/features.js";
 import cloudinary from "cloudinary"
@@ -14,13 +16,27 @@ export const getAllProductController = async (req, resp) => {
         }
         const products = await productModel.find(query);
         // const products = await productModel.find({});
+        const user = await userModel.findById(req.user._id)
+        const userId = user._id;
+        const likedProducts = await ProductLikesModel.find({ user: userId, status: 1 });
+
+        // Map the liked product IDs to an array
+        const likedProductIds = likedProducts.map(likedProduct => likedProduct.product.toString());
+
+        // Update each product with the isFavourite property
+        const productsWithFavouriteStatus = products.map(product => {
+            const isFavourite = likedProductIds.includes(product._id.toString());
+            return { ...product._doc, isFavourite }; // Add the isFavourite property to the product object
+        });
+
         resp.status(200).send({
             success: true,
-            message: 'all products fetched successfuly',
-            totalProducts : products.length,
-            products
-        })
+            message: 'All products fetched successfully',
+            totalProducts: products.length,
+            products: productsWithFavouriteStatus
+        });
     } catch (error) {
+        console.log(error);
         resp.status(500).send({
             success: false,
             message: 'getAllProduct API Error',
@@ -288,3 +304,38 @@ export const deleteProductController = async(req, resp) => {
         })
     }
 }
+
+export const likeOrUnlikeProductController = async (req, res) => {
+    try {
+        const { productId } = req.params;
+        const user = await userModel.findById(req.user._id)
+        const userId = user._id;
+
+        const existingLike = await ProductLikesModel.findOne({ user: userId, product: productId });
+
+        if (existingLike) {
+            existingLike.status = existingLike.status === 1 ? 0 : 1;
+            await existingLike.save();
+        } else {
+            await ProductLikesModel.create({
+                user: userId,
+                product: productId,
+                status: 1
+            });
+        }
+
+        const message = existingLike && existingLike.status === 1 ? 'Product liked successfully' : 'Product unliked successfully';
+
+        return res.status(200).send({
+            success: true,
+            message
+        });
+    } catch (error) {
+        console.log(error);
+        return res.status(500).send({
+            success: false,
+            message: 'Error toggling product like status',
+            error
+        });
+    }
+};

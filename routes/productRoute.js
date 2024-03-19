@@ -1,12 +1,12 @@
 import express from "express";
-import { createNewProductController, deleteProductController, deleteProductIamgeController, getAllProductController, getSingleProductController, updateProductController, updateProductImageController } from "../controllers/productController.js";
+import { likeOrUnlikeProductController, createNewProductController, deleteProductController, deleteProductIamgeController, getAllProductController, getSingleProductController, updateProductController, updateProductImageController } from "../controllers/productController.js";
 import { singlUpload } from "../middlewares/multer.js";
 import { isAuthentic } from "../middlewares/authMiddleware.js";
 
 const router = express.Router()
 
 //Get All products
-router.get('/get-all', getAllProductController)
+router.get('/get-all',isAuthentic, getAllProductController)
 
 //Get Single product
 router.get('/:id', getSingleProductController)
@@ -25,5 +25,7 @@ router.delete('/delete-image/:id', isAuthentic, deleteProductIamgeController)
 
 //delete product
 router.delete('/delete/:id', isAuthentic, deleteProductController)
+
+router.put('/:productId/like',isAuthentic, likeOrUnlikeProductController);
 
 export default router
