@@ -22,7 +22,7 @@ export const getAllProductController = async (req, resp) => {
         
         const user = await userModel.findById(req.user._id);
         const userId = user._id;
-        const likedProducts = await ProductLikesModel.find({ user: userId, status: 1 });
+        const likedProducts = await productLikesModel.find({ user: userId, status: 1 });
 
         const likedProductIds = likedProducts.map(likedProduct => likedProduct.product.toString());
 
@@ -319,7 +319,7 @@ export const likeOrUnlikeProductController = async (req, res) => {
             existingLike.status = existingLike.status === 1 ? 0 : 1;
             await existingLike.save();
         } else {
-            await ProductLikesModel.create({
+            await productLikesModel.create({
                 user: userId,
                 product: productId,
                 status: 1
