@@ -1,5 +1,5 @@
 import express from "express";
-import { getAllGuestProductController, likeOrUnlikeProductController, createNewProductController, deleteProductController, deleteProductIamgeController, getAllProductController, getSingleProductController, updateProductController, updateProductImageController } from "../controllers/productController.js";
+import { addProductDetailsController, uploadProductPictureController, getAllGuestProductController, likeOrUnlikeProductController, deleteProductController, deleteProductIamgeController, getAllProductController, getSingleProductController, updateProductController, updateProductImageController } from "../controllers/productController.js";
 import { singlUpload } from "../middlewares/multer.js";
 import { isAuthentic } from "../middlewares/authMiddleware.js";
 
@@ -15,7 +15,13 @@ router.get('/get-all-guest', getAllGuestProductController)
 router.get('/:id', getSingleProductController)
 
 //create New Product
-router.post('/create', singlUpload, isAuthentic, createNewProductController)
+// router.post('/create', singlUpload, isAuthentic, createNewProductController)
+
+// product image upload
+router.post('/upload-picture',singlUpload, isAuthentic, uploadProductPictureController);
+
+// add product details
+router.post('/add-details',isAuthentic, addProductDetailsController);
 
 //update product
 router.put('/:id', isAuthentic, updateProductController)
@@ -32,9 +38,5 @@ router.delete('/delete/:id', isAuthentic, deleteProductController)
 // like or unlike product
 router.put('/:productId/like',isAuthentic, likeOrUnlikeProductController);
 
-// get likes products
-// router.get('/getliked', isAuthentic, getAllLikedProducts);
-
-// router.get('/get', isAuthentic, getAllLikedProducts);
 
 export default router

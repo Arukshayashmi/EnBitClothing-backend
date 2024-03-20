@@ -2,7 +2,7 @@ import { productLikesModel } from "../models/productLikesModel.js";
 import { userModel } from "../models/users.js"
 import { productModel } from "../models/productModel.js"
 import { getDataUri } from "../utils/features.js";
-import cloudinary from "cloudinary"
+import cloudinary from 'cloudinary'
 
 //get all products
 export const getAllProductController = async (req, resp) => {
@@ -128,50 +128,110 @@ export const getSingleProductController = async (req, resp) => {
 
 
 //create new product
-export const createNewProductController = async (req, resp) => {
+// export const createNewProductController = async (req, resp) => {
+//     try {
+//         const { name, description, price, category } = req.body
+//         //validation
+//         // if (!name || !description || !price || !stock || !category) {
+//         //     return resp.status(500).send({
+//         //         success: false,
+//         //         message: 'please provide all the fields'         //Cooment are apply due to form validation in postman and will remove when integrate to client side
+//         //     })
+//         // }
+//         // image validation
+//         if(!req.file){
+//             return resp.status(500).send({
+//                 success:false,
+//                 message:'Please provide product image'
+//             })
+//         }
+//         //get image
+//         const file = getDataUri(req.file)
+//         const cdb = await cloudinary.v2.uploader.upload(file.content)
+//         const image = {
+//             public_id: cdb.public_id,
+//             url: cdb.secure_url
+//         }
+//         //save data
+//         await productModel.create({
+//             name,
+//             description, 
+//             price, 
+//             category, 
+//             images: [image]
+//         })
+//         resp.status(200).send({
+//             success:true,
+//             message:'Product Created Successfully'
+//         })
+//     } catch (error) {
+//         resp.status(500).send({
+//             success: false,
+//             message: 'createNewProduct API Error',
+//             error
+//         })
+//     }
+// }
+
+// add product image
+export const uploadProductPictureController = async (req, resp) => {
     try {
-        const { name, description, price, category } = req.body
-        //validation
-        // if (!name || !description || !price || !stock || !category) {
-        //     return resp.status(500).send({
-        //         success: false,
-        //         message: 'please provide all the fields'         //Cooment are apply due to form validation in postman and will remove when integrate to client side
-        //     })
-        // }
-        // image validation
-        if(!req.file){
-            return resp.status(500).send({
-                success:false,
-                message:'Please provide product image'
-            })
-        }
-        //get image
         const file = getDataUri(req.file)
-        const cdb = await cloudinary.v2.uploader.upload(file.content)
-        const image = {
-            public_id: cdb.public_id,
-            url: cdb.secure_url
+        // console.log(file)
+        if (!file) {
+            return resp.status(400).json({ success: false, message: 'Please upload a file' });
         }
-        //save data
-        await productModel.create({
-            name,
-            description, 
-            price, 
-            category, 
-            images: [image]
-        })
-        resp.status(200).send({
-            success:true,
-            message:'Product Created Successfully'
-        })
+        // Upload image to Cloudinary
+        const cdb = await cloudinary.v2.uploader.upload(file.content)
+
+        // Return the public ID and URL of the uploaded image
+        resp.status(200).json({
+            success: true,
+            message: 'Product picture uploaded successfully',
+            publicId: cdb.public_id,
+            imageUrl: cdb.secure_url
+        });
     } catch (error) {
-        resp.status(500).send({
+        console.error('Error uploading product picture:', error);
+        resp.status(500).json({
             success: false,
-            message: 'createNewProduct API Error',
-            error
-        })
+            message: 'Error uploading product picture',
+            error: error.message
+        });
     }
-}
+};
+
+// // Add Product Details
+export const addProductDetailsController = async (req, res) => {
+    try {
+        const { name, description, price, category, publicId, imageUrl } = req.body;
+
+        // Create a new product document in the database
+        const newProduct = await productModel.create({
+            name,
+            description,
+            price,
+            category,
+            images: {
+                public_id: publicId,
+                url: imageUrl
+            }
+        });
+
+        res.status(200).json({
+            success: true,
+            message: 'Product added successfully',
+            product: newProduct
+        });
+    } catch (error) {
+        console.error('Error adding product details:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error adding product details',
+            error: error.message
+        });
+    }
+};
 
 
 //Update Product

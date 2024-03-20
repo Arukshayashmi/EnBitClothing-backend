@@ -18,12 +18,14 @@ const productSchema = new mongoose.Schema({
         ref: 'Category',
         required:[true, 'Product category is required']
     },
-    images:[
-        {
-            public_id:String,
-            url:String
+    images: {
+        public_id : {
+            type : String
+        },
+        url : {
+            type : String
         }
-    ]
+    }
 }, {timestamps:true} )
 
 export const productModel = mongoose.model("products", productSchema)

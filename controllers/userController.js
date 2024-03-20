@@ -341,6 +341,7 @@ export const userProfilePicUpdateController = async (req, resp) => {
             user : updatedUser
         })
     } catch (error) {
+        console.log(error)
         resp.status(500).send({
             success : false,
             message : 'Profile Photo update API Error',
