@@ -1,5 +1,5 @@
 import express from "express";
-import {  likeOrUnlikeProductController, createNewProductController, deleteProductController, deleteProductIamgeController, getAllProductController, getSingleProductController, updateProductController, updateProductImageController } from "../controllers/productController.js";
+import { getAllGuestProductController, likeOrUnlikeProductController, createNewProductController, deleteProductController, deleteProductIamgeController, getAllProductController, getSingleProductController, updateProductController, updateProductImageController } from "../controllers/productController.js";
 import { singlUpload } from "../middlewares/multer.js";
 import { isAuthentic } from "../middlewares/authMiddleware.js";
 
@@ -7,6 +7,9 @@ const router = express.Router()
 
 //Get All products
 router.get('/get-all',isAuthentic, getAllProductController)
+
+//Get Guest All products
+router.get('/get-all-guest', getAllGuestProductController)
 
 //Get Single product
 router.get('/:id', getSingleProductController)

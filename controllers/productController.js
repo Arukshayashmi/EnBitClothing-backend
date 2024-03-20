@@ -47,6 +47,48 @@ export const getAllProductController = async (req, resp) => {
     }
 };
 
+// getall products for guest user
+export const getAllGuestProductController = async (req, resp) => {
+    try {
+        const { q, categoryId } = req.query;
+        let query = {};
+
+        if (q) {
+            const searchPattern = new RegExp(q, 'i');
+            query.name = searchPattern;
+        }
+        if (categoryId) {
+            query.category = categoryId;
+        }
+        
+        const products = await productModel.find(query).populate('category', 'category');
+        
+        // const user = await userModel.findById(req.user._id);
+        // const userId = user._id;
+        const likedProducts = await productLikesModel.find({ status: 1 });
+
+        const likedProductIds = likedProducts.map(likedProduct => likedProduct.product.toString());
+
+        const productsWithFavouriteStatus = products.map(product => {
+            const isFavourite = likedProductIds.includes(product._id.toString());
+            return { ...product._doc, isFavourite }; 
+        });
+
+        resp.status(200).send({
+            success: true,
+            message: 'All products fetched successfully',
+            totalProducts: products.length,
+            products: productsWithFavouriteStatus
+        });
+    } catch (error) {
+        console.log(error);
+        resp.status(500).send({
+            success: false,
+            message: 'getAllProduct API Error',
+            error
+        });
+    }
+};
 
 
 
