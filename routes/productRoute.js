@@ -18,7 +18,7 @@ router.get('/:id', getSingleProductController)
 // router.post('/create', singlUpload, isAuthentic, createNewProductController)
 
 // product image upload
-router.post('/upload-picture',singlUpload, isAuthentic, uploadProductPictureController);
+router.put('/upload-picture',singlUpload, isAuthentic, uploadProductPictureController);
 
 // add product details
 router.post('/add-details',isAuthentic, addProductDetailsController);
