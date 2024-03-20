@@ -68,7 +68,7 @@ export const getAllCheckoutProductsController = async (req, res) => {
     try {
         const user = await userModel.findById(req.user._id);
 
-        const checkoutEntries = await checkoutModel.find({ checkoutUserId: user._id });
+        const checkoutEntries = await checkoutModel.find({ checkoutUserId: user._id, status: 1});
         
         const checkoutProducts = [];
 
