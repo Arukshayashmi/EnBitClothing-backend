@@ -37,7 +37,7 @@ export const paidController = async (req, res) => {
             checkoutUserId: user._id,
             productId: productId
         });
-
+        // console.log(checkoutEntry)
         if (checkoutEntry) {
             checkoutEntry.status = 2;
             await checkoutEntry.save();
@@ -47,6 +47,7 @@ export const paidController = async (req, res) => {
                 message: 'Product marked as paid successfully'
             });
         } else {
+            // console.log('error');
             res.status(404).json({
                 success: false,
                 message: 'Checkout entry not found for the specified product ID'
@@ -102,6 +103,34 @@ export const getAllCheckoutProductsController = async (req, res) => {
         res.status(500).json({
             success: false,
             message: 'Error retrieving checkout products',
+            error: error.message
+        });
+    }
+};
+
+// remove checkout
+export const deleteCheckoutController = async (req, res) => {
+    try {
+        const { checkoutId } = req.params;
+
+        const deletedEntry = await checkoutModel.findByIdAndDelete(checkoutId);
+
+        if (deletedEntry) {
+            res.status(200).json({
+                success: true,
+                message: 'Checkout entry deleted successfully'
+            });
+        } else {
+            res.status(404).json({
+                success: false,
+                message: 'Checkout entry not found'
+            });
+        }
+    } catch (error) {
+        console.error('Error deleting checkout entry:', error);
+        res.status(500).json({
+            success: false,
+            message: 'Error deleting checkout entry',
             error: error.message
         });
     }
