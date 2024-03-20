@@ -72,7 +72,7 @@ export const getAllCheckoutProductsController = async (req, res) => {
         const checkoutProducts = [];
 
         for (const entry of checkoutEntries) {
-            const product = await productModel.findById(entry.productId);
+            const product = await productModel.findById(entry.productId).populate('category','category');
             const productDetails = {
                 _id: product._id,
                 name: product.name,
